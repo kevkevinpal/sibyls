@@ -36,6 +36,9 @@ impl PriceFeed for Bitstamp {
         match asset_pair {
             AssetPair::BTCUSD => Ok("btcusd"),
             AssetPair::BTCUSDT => Ok("btcusdt"),
+            AssetPair::MSTRUSD => Err(PriceFeedError::InternalError(
+                "bitstamp does not support MSTRUSD".to_string(),
+            )),
         }
     }
 

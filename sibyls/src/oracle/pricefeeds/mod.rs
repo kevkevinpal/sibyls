@@ -6,6 +6,7 @@ use serde::Serialize;
 use time::OffsetDateTime;
 
 pub use bitfinex::Bitfinex;
+pub use alpha_avantage::AlphaAvantage;
 pub use bitstamp::Bitstamp;
 pub use deribit::Deribit;
 pub use error::PriceFeedError;
@@ -33,6 +34,7 @@ pub static ALL_PRICE_FEEDS: &[FeedId] = &[
     FeedId::GateIO,
     FeedId::Kraken,
     FeedId::Bitfinex,
+    FeedId::AlphaAvantage,
     FeedId::Deribit,
 ];
 
@@ -43,6 +45,7 @@ pub enum FeedId {
     GateIO,
     Kraken,
     Bitfinex,
+    AlphaAvantage,
     Deribit,
 }
 
@@ -62,6 +65,7 @@ pub fn create_price_feed(feed_id: &FeedId) -> Box<dyn PriceFeed + Send + Sync> {
         FeedId::Kraken => Box::new(Kraken {}),
         FeedId::Bitfinex => Box::new(Bitfinex {}),
         FeedId::Deribit => Box::new(Deribit {}),
+        FeedId::AlphaAvantage => Box::new(AlphaAvantage {}),
     }
 }
 
@@ -149,6 +153,7 @@ pub async fn get_aggregate_price_from_feeds(
 }
 
 mod bitfinex;
+mod alpha_avantage;
 mod bitstamp;
 mod deribit;
 mod gateio;

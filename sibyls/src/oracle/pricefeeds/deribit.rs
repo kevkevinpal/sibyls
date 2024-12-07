@@ -38,6 +38,9 @@ impl PriceFeed for Deribit {
             AssetPair::BTCUSDT => Err(PriceFeedError::InternalError(
                 "deribit does not support USDT".to_string(),
             )),
+            AssetPair::MSTRUSD => Err(PriceFeedError::InternalError(
+                "deribit does not support MSTRUSD".to_string(),
+            )),
         }
     }
 

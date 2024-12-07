@@ -15,6 +15,7 @@ use crate::oracle::pricefeeds::FeedId;
 pub enum AssetPair {
     BTCUSD,
     BTCUSDT,
+    MSTRUSD,
 }
 
 impl FromStr for AssetPair {
@@ -25,6 +26,8 @@ impl FromStr for AssetPair {
             Ok(AssetPair::BTCUSD)
         } else if s == "BTCUSDT" {
             Ok(AssetPair::BTCUSDT)
+        } else if s == "MSTRUSD" {
+            Ok(AssetPair::MSTRUSD)
         } else {
             Err(SibylsError::UnknownAssetPairError(s.to_string()))
         }

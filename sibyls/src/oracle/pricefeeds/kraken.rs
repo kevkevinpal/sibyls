@@ -29,6 +29,9 @@ impl PriceFeed for Kraken {
         match asset_pair {
             AssetPair::BTCUSD => Ok("XXBTZUSD"),
             AssetPair::BTCUSDT => Ok("XXBTZUSDT"),
+            AssetPair::MSTRUSD => Err(PriceFeedError::InternalError(
+                "kraken does not support MSTRUSD".to_string(),
+            )),
         }
     }
 

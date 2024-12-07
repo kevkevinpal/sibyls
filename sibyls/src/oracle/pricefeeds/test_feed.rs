@@ -20,6 +20,9 @@ impl PriceFeed for TestFeed {
         match asset_pair {
             AssetPair::BTCUSD => Ok("BTCUSD"),
             AssetPair::BTCUSDT => Ok("BTCUSDT"),
+            AssetPair::MSTRUSD => Err(PriceFeedError::InternalError(
+                "test_feed does not support MSTRUSD".to_string(),
+            )),
         }
     }
 

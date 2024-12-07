@@ -19,6 +19,9 @@ impl PriceFeed for Bitfinex {
         match asset_pair {
             AssetPair::BTCUSD => Ok("tBTCUSD"),
             AssetPair::BTCUSDT => Ok("tBTCUST"),
+            AssetPair::MSTRUSD => Err(PriceFeedError::InternalError(
+                "bitfinex does not support MSTRUSD".to_string(),
+            )),
         }
     }
 

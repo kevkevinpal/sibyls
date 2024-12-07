@@ -10,5 +10,17 @@
         },
         "include_price_feeds": ["Kraken"],
         "exclude_price_feeds": []
+    },
+    {
+        "asset_pair": "MSTRUSD",
+        "event_descriptor": {
+            "base": 2,
+            "is_signed": false,
+            "unit": "MSTRUSD",
+            "precision": 0,
+            "num_digits": 18
+        },
+        "include_price_feeds": ["AlphaAvantage"],
+        "exclude_price_feeds": []
     }
 ]

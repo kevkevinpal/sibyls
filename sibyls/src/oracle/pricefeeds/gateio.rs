@@ -18,6 +18,9 @@ impl PriceFeed for GateIo {
         match asset_pair {
             AssetPair::BTCUSD => Ok("BTC_USD"),
             AssetPair::BTCUSDT => Ok("BTC_USDT"),
+            AssetPair::MSTRUSD => Err(PriceFeedError::InternalError(
+                "gateio does not support MSTRUSD".to_string(),
+            )),
         }
     }
 
