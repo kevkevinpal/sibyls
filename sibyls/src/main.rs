@@ -4,6 +4,7 @@ extern crate log;
 use actix_web::{get, web, App, HttpResponse, HttpServer, middleware::Logger};
 use clap::Parser;
 use dlc_messages::ser_impls::write_as_tlv;
+use dlc_messages::oracle_msgs::OracleAnnouncement;
 use hex::ToHex;
 use secp256k1_zkp::{KeyPair, Secp256k1, SecretKey};
 use serde::Serialize;
@@ -24,6 +25,7 @@ use sibyls::oracle::pricefeeds::ALL_PRICE_FEEDS;
 
 mod error;
 use error::SibylsError;
+use serde_json::json;
 
 #[derive(Serialize)]
 struct ApiOracleEvent {
@@ -101,6 +103,32 @@ async fn announcement(
     Ok(HttpResponse::Ok().json(event))
 }
 
+#[get("/asset/USDBTC/announcement/{rfc3339_time}")]
+async fn asset_announcement(
+    oracles: web::Data<HashMap<AssetPair, Oracle>>,
+    filters: web::Query<Filters>,
+    path: web::Path<String>,
+) -> actix_web::Result<HttpResponse, actix_web::Error> {
+    info!("{:#?}", filters);
+    let maturation =
+        OffsetDateTime::parse(&path, &Rfc3339).map_err(SibylsError::DatetimeParseError)?;
+
+    let oracle = match oracles.get(&AssetPair::BTCUSD) {
+        None => return Err(SibylsError::UnrecordedAssetPairError(AssetPair::BTCUSD).into()),
+        Some(val) => val,
+    };
+
+    info!("retrieving oracle event with maturation {}", path);
+
+    let event = oracle
+        .event_database
+        .get_oracle_event(&maturation, AssetPair::BTCUSD)?;
+    let event_announcement: OracleAnnouncement = event.announcement.clone();
+    //let event = Into::<OracleAnnouncement>::into(&event_announcement);
+
+    Ok(HttpResponse::Ok().json(event_announcement))
+}
+
 #[get("/config")]
 async fn config(
     oracles: web::Data<HashMap<AssetPair, Oracle>>,
@@ -124,6 +152,21 @@ async fn pubkey(
             .next()
             .expect("no asset pairs recorded")
             .pubkey(),
+    ))
+}
+
+#[get("/oracle/publickey")]
+async fn publickey(
+    oracles: web::Data<HashMap<AssetPair, Oracle>>,
+) -> actix_web::Result<HttpResponse, actix_web::Error> {
+    Ok(HttpResponse::Ok().json(
+        json!({
+            "publicKey": oracles
+                .values()
+                .next()
+                .expect("no asset pairs recorded")
+                .pubkey()
+        })
     ))
 }
 
@@ -289,7 +332,9 @@ async fn main() -> anyhow::Result<()> {
                 web::scope("/v1")
                     .service(announcements)
                     .service(announcement)
+                    .service(asset_announcement)
                     .service(pubkey)
+                    .service(publickey)
                     .service(config),
             )
     })
